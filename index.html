@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>jFrog game</title>
+  <script src="https://unpkg.com/vue"></script>
+    <style>
+        html, body {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #header {
+            background-image: url(https://media.jfrog.com/wp-content/uploads/sites/3/2017/10/20115234/green_logo.png);
+            height: 130px;
+            width: 140px;
+        }
+        #game-box {
+            margin: 0 auto;
+            width: 70vmin;
+            height: 70vmin;
+            background: #2f2f2f;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 0.25vmin;
+        }
+        .game-element {
+            margin: 0 auto;
+            width: 24%;
+            height: 24%;
+            background: #40be46;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .game-element-front, .game-element-back {
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+        }
+        .game-element-back {
+            background: white;
+            background-size: contain;
+            background-repeat: no-repeat;
+            height: 100%;
+            transform: rotateY(180deg);
+        }
+        .game-element.selected {
+            transform: rotateY(180deg);
+        }
+        .game-element.found {
+            background: #7a73ae;
+        }
+        #elapsed-seconds {
+            text-align: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    <div id="app">
+        <div id="elapsed-seconds">Elapsed seconds: {{ elapsedSeconds }}</div>
+        <div id="game-box">
+            <div class="game-element" v-on:click="select($event, card)" v-for="(card) in cards" v-bind:class="{ selected: card.selected, found: card.found }">
+                <div class="game-element-front"></div>
+                <div class="game-element-back" v-bind:style="{'background-image': 'url(' + card.imageUrl +')'}"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const gameBox = new Vue({
+            el: '#app',
+            created: function() {
+                this.cards = [...JSON.parse(JSON.stringify(this.cards)),...JSON.parse(JSON.stringify(this.cards))];
+                this.cards = this.cards.sort(() => Math.random() - 0.5);
+                this.intervalId = setInterval(()=> {
+                    this.elapsedSeconds += 1;
+                }, 1000);
+            },
+            data: {
+                intervalId: undefined,
+                elapsedSeconds: 0,
+                blockedGame: false,
+                selectedCards: [],
+                cards: [
+                    {
+                        imageUrl: 'https://media.jfrog.com/wp-content/uploads/2020/06/16143409/frog-pro-oss-new.png',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://media.jfrog.com/wp-content/uploads/2020/08/16153326/open-source-hipster-frog-1.png',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://media.jfrog.com/wp-content/uploads/2019/12/20130011/frog-community.png',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://sc02.alicdn.com/kf/HLB1.Uw8RG6qK1RjSZFmq6x0PFXat/Squishy-toys-Frog-shape-stress-release-ball.jpg',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://media.jfrog.com/wp-content/uploads/2020/07/07101721/frog-bintray-animation.gif',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://media.jfrog.com/wp-content/uploads/sites/3/2017/10/20115234/green_logo.png',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://join.jfrog.com/wp-content/themes/join.jfrog.com/assets/images/cursor.png',
+                        found: false,
+                        selected: false
+                    },
+                    {
+                        imageUrl: 'https://pbs.twimg.com/media/EaQwqvfXgAEVUb3.jpg',
+                        found: false,
+                        selected: false
+                    },
+                ]
+            },
+            methods: {
+                select: function(event, card) {
+                    if (card.found || card.selected || this.blockedGame) {
+                        return;
+                    }
+                    card.selected = true;
+
+                    if(this.selectedCards.length < 2) {
+                        this.selectedCards.push(card);
+                    }
+
+                    if(this.selectedCards.length === 2) {
+                        this.blockedGame = true;
+                        setTimeout(() => {
+                            this.selectedCards[0].selected = false;
+                            this.selectedCards[1].selected = false;
+                            if (this.selectedCards[0].imageUrl === this.selectedCards[1].imageUrl) {
+                                this.selectedCards[0].found = true;
+                                this.selectedCards[1].found = true;
+                                this.checkGameState();
+                            }
+                            this.selectedCards = [];
+                            this.blockedGame = false;
+                        }, 1000);
+                    }
+                },
+                checkGameState() {
+                    if (this.cards.filter(card => !card.found).length === 0) {
+                        clearInterval(this.intervalId);
+                    }
+                }
+            }
+        });
+      </script>
+</body>
+</html>
