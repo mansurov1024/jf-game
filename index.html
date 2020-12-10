@@ -31,7 +31,7 @@
             width: 24%;
             height: 24%;
             background: #40be46;
-            transition: transform 0.8s;
+            transition: 0.8s all;
             transform-style: preserve-3d;
         }
         .game-element-front, .game-element-back {
@@ -46,6 +46,7 @@
             transform: rotateY(180deg);
         }
         .game-element.selected {
+            background: transparent;
             transform: rotateY(180deg);
         }
         .game-element.found {
