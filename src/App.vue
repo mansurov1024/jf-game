@@ -1,28 +1,36 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div id="app">
+        <div id="header"></div>
+        <Game/>
+    </div>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+    import { Component, Vue } from 'vue-property-decorator';
+    import Game from '@/components/Game.vue';
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+    @Component({
+        components: {
+            Game,
+        },
+    })
+    export default class App extends Vue {
+    }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+    #app {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    #header {
+        background-image: url(assets/green_logo.png);
+        background-size: 100%;
+        height: 65px;
+        width: 70px;
+    }
 </style>
